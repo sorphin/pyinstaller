@@ -17,7 +17,6 @@ Automatically build spec files containing a description of the project
 import os
 import sys
 import argparse
-from distutils.version import LooseVersion
 
 from .. import HOMEPATH, DEFAULT_SPECPATH
 from .. import log as logging
@@ -67,9 +66,11 @@ path_conversions = (
 def add_data_or_binary(string):
     try:
         src, dest = string.split(add_command_sep)
-    except ValueError:
+    except ValueError as e:
         # Split into SRC and DEST failed, wrong syntax
-        raise argparse.ArgumentError("Wrong syntax, should be SRC{}DEST".format(add_command_sep))
+        raise argparse.ArgumentError(
+            "Wrong syntax, should be SRC{}DEST".format(add_command_sep)
+        ) from e
     if not src or not dest:
         # Syntax was correct, but one or both of SRC and DEST was not given
         raise argparse.ArgumentError("You have to specify both SRC and DEST")
@@ -86,7 +87,14 @@ def make_variable_path(filename, conversions=path_conversions):
     for (from_path, to_name) in conversions:
         assert os.path.abspath(from_path) == from_path, (
             "path '%s' should already be absolute" % from_path)
-        if os.path.commonpath([filename, from_path]) == from_path:
+        try:
+            common_path = os.path.commonpath([filename, from_path])
+        except ValueError:
+            # Per https://docs.python.org/3/library/os.path.html#os.path.commonpath,
+            # this raises ValueError in several cases which prevent computing
+            # a common path.
+            common_path = None
+        if common_path == from_path:
             rest = filename[len(from_path):]
             if rest.startswith(('\\', '/')):
                 rest = rest[1:]
@@ -398,18 +406,14 @@ def main(scripts, name=None, onefile=None,
     scripts = list(map(Path, scripts))
 
     if key:
-        # Tries to import PyCrypto since we need it for bytecode obfuscation. Also make sure its
-        # version is >= 2.4.
+        # Tries to import tinyaes since we need it for bytecode obfuscation.
         try:
-            import Crypto
-            is_version_acceptable = LooseVersion(Crypto.__version__) >= LooseVersion('2.4')
-            if not is_version_acceptable:
-                logger.error('PyCrypto version must be >= 2.4, older versions are not supported.')
-                sys.exit(1)
+            import tinyaes  # noqa: F401 (test import)
         except ImportError:
-            logger.error('We need PyCrypto >= 2.4 to use byte-code obfuscation but we could not')
+            logger.error('We need tinyaes to use byte-code obfuscation but we '
+                         'could not')
             logger.error('find it. You can install it with pip by running:')
-            logger.error('  pip install PyCrypto')
+            logger.error('  pip install tinyaes')
             sys.exit(1)
         cipher_init = cipher_init_template % {'key': key}
     else:

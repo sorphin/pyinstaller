@@ -6,9 +6,11 @@
 __pycache__/
 /*.egg
 /*.egg-info/
+*.egg-info/
 /*.egg-link
 /.eggs/
 /.pytest_cache/
+/pip-wheel-metadata/
 
 # /
 /AES.pyd
@@ -103,3 +105,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# VSCode projects
+*.code-workspace

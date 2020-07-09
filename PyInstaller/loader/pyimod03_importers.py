@@ -282,8 +282,10 @@ class FrozenImporter(object):
         if fullname in self.toc:
             try:
                 return self._pyz_archive.is_package(fullname)
-            except Exception:
-                raise ImportError('Loader FrozenImporter cannot handle module ' + fullname)
+            except Exception as e:
+                raise ImportError(
+                    'Loader FrozenImporter cannot handle module ' + fullname
+                ) from e
         else:
             raise ImportError('Loader FrozenImporter cannot handle module ' + fullname)
 
@@ -298,8 +300,10 @@ class FrozenImporter(object):
             # next line will raise an execpion which will be catched just
             # below and raise the ImportError.
             return self._pyz_archive.extract(fullname)[1]
-        except:
-            raise ImportError('Loader FrozenImporter cannot handle module ' + fullname)
+        except Exception as e:
+            raise ImportError(
+                'Loader FrozenImporter cannot handle module ' + fullname
+            ) from e
 
     def get_source(self, fullname):
         """

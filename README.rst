@@ -1,6 +1,8 @@
 PyInstaller Overview
 ====================
 
+**New PyInstaller team members wanted! Email legorooj@protonmail.com if you're interested.**
+
 PyInstaller bundles a Python application and all its dependencies into a single
 package. The user can run the packaged app without installing a Python
 interpreter or any modules.
@@ -49,7 +51,7 @@ Main Advantages
   tricks to make external packages work are already integrated.)
 - Libraries like PyQt5, PyQt4, PySide, wxPython, matplotlib or Django are fully
   supported, without having to handle plugins or external data files manually.
-- Working code signing on OS X.
+- Works with code signing on OS X.
 - Bundles MS Visual C++ DLLs on Windows.
 
 
@@ -67,11 +69,12 @@ Requirements and Tested Platforms
 - Python: 
 
  - 3.5-3.7
- - PyCrypto_ 2.4+ (only if using bytecode encryption)
+ - tinyaes_ 1.0+ (only if using bytecode encryption).
+   Instead of installing tinyaes, ``pip install pyinstaller[encryption]`` instead.
 
 - Windows (32bit/64bit):
 
- - Windows XP or newer.
+ - PyInstaller should work on Windows 7 or newer, but we only officially support Windows 8+.
 
  - We don't support Python installed from the Windows store when not using virtual environments due to 
    `permission errors <https://github.com/pyinstaller/pyinstaller/pull/4702>`_ 
@@ -159,6 +162,6 @@ http://www.pyinstaller.org/funding.html for how to support PyInstaller.
 
 
 
-.. _PyCrypto: https://www.dlitz.net/software/pycrypto/
+.. _tinyaes: https://github.com/naufraghi/tinyaes-py
 .. _`manual`: https://pyinstaller.readthedocs.io/en/latest/
 
